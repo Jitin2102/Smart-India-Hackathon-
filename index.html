@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EduGov Search — Higher Education Knowledge Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">EG</div>
+    <div>
+      <div class="brand">EduGov Search</div>
+      <div class="subtitle">Unified retrieval for Regulations • Policies • Projects • Rules • Schemes</div>
+    </div>
+  </header>
+  <div class="wrap">
+    <aside>
+      <div class="sec-title">Filters</div>
+      <div class="filter-group">
+        <label>Document Type</label>
+        <div class="chips" id="typeChips">
+          <div class="chip active" data-type="all">All</div>
+          <div class="chip" data-type="regulation">Regulation</div>
+          <div class="chip" data-type="policy">Policy</div>
+          <div class="chip" data-type="project">Project</div>
+          <div class="chip" data-type="rule">Rule</div>
+          <div class="chip" data-type="scheme">Scheme</div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Issuing Body</label>
+        <select id="issuer">
+          <option value="any">Any</option>
+          <option>UGC</option>
+          <option>AICTE</option>
+          <option>NCTE</option>
+          <option>MoE</option>
+          <option>State Dept</option>
+        </select>
+      </div>
+      <div class="split">
+        <div class="filter-group">
+          <label>From</label>
+          <input type="date" id="fromDate" />
+        </div>
+        <div class="filter-group">
+          <label>To</label>
+          <input type="date" id="toDate" />
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Tags</label>
+        <div class="chips" id="tags">
+          <div class="chip" data-tag="scholarship">Scholarship</div>
+          <div class="chip" data-tag="accreditation">Accreditation</div>
+          <div class="chip" data-tag="ai">AI</div>
+          <div class="chip" data-tag="exam">Exam</div>
+          <div class="chip" data-tag="faculty">Faculty</div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Search Mode</label>
+        <div class="chips" id="modeChips">
+          <div class="chip active" data-mode="hybrid">Hybrid</div>
+          <div class="chip" data-mode="keyword">Keyword</div>
+          <div class="chip" data-mode="semantic">Semantic</div>
+          <div class="chip" data-mode="rag">RAG</div>
+        </div>
+      </div>
+      <button class="btn" id="saveSearch">Save Current Filter</button>
+      <div class="admin-panel">
+        <div class="sec-title">Admin Tools</div>
+        <div class="grid-3">
+          <button class="btn" id="ingestBtn">Ingest Docs</button>
+          <button class="btn" id="reindexBtn">Re-index</button>
+          <button class="btn" id="validateBtn">Validate</button>
+        </div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted)">
+          Status: <span id="adminStatus" class="note">Idle</span>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <div class="searchbar">
+        <input id="q" class="search-input" placeholder="Ask anything, e.g. 'Scholarship eligibility for SC students in 2024 across states' or 'AICTE faculty workload rule updates'">
+        <button class="btn" id="suggestBtn">Suggest Queries</button>
+        <button class="btn btn-primary" id="searchBtn">Search</button>
+        <div class="chips" id="quickChips" style="grid-column: 1 / -1;">
+          <div class="chip" data-quick="latest regulations on accreditation">Latest regulations on accreditation</div>
+          <div class="chip" data-quick="AI policy for engineering curriculum">AI policy for engineering curriculum</div>
+          <div class="chip" data-quick="state scholarship schemes 2024">State scholarship schemes 2024</div>
+          <div class="chip" data-quick="phd admission rules ugc">PhD admission rules UGC</div>
+        </div>
+      </div>
+      <div class="results-wrap">
+        <section class="results">
+          <div class="results-header">
+            <div>Results <span class="pill" id="resCount">0</span></div>
+            <div>
+              <span class="note">Sort</span>
+              <span class="chip" data-sort="relevance">Relevance</span>
+              <span class="chip active" data-sort="recent">Recent</span>
+              <span class="chip" data-sort="issuer">Issuer</span>
+            </div>
+          </div>
+          <div class="result-list" id="resultList"></div>
+        </section>
+        <section class="doc">
+          <div class="doc-header">
+            <div>Document Viewer</div>
+            <div>
+              <button class="btn" id="openSource">Open Source</button>
+              <button class="btn" id="saveDoc">Save</button>
+              <button class="btn" id="citeDoc">Cite</button>
+            </div>
+          </div>
+          <div class="doc-body" id="docBody">
+            <div class="empty">Select a result to view document details and highlights.</div>
+          </div>
+        </section>
+        <section class="right">
+          <div class="right-header">
+            <div>Insights & Collections</div>
+            <div>
+              <button class="btn" id="askAI">Ask AI</button>
+            </div>
+          </div>
+          <div class="right-body">
+            <div class="sec-title">Key Insights</div>
+            <div id="insights" class="kv">
+              <div class="empty">Run a search to see automatically extracted insights (entities, dates, issuers, schemes).</div>
+            </div>
+            <div class="sec-title" style="margin-top:14px;">Saved Collection</div>
+            <table class="table" id="collectionTable">
+              <thead><tr><th>Title</th><th>Type</th><th>Issuer</th><th>Action</th></tr></thead>
+              <tbody id="collectionBody"><tr><td colspan="4" class="empty">No items saved.</td></tr></tbody>
+            </table>
+            <div class="sec-title" style="margin-top:14px;">Citations</div>
+            <div id="citations" class="kv">
+              <div class="empty">Citations appear when you open a document.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="footer">
+        <div class="note">Prototype • Hybrid Search + Semantic + RAG-ready • Role-based access • Audit logging planned</div>
+        <div>
+          <span class="pill">Latency target <b>&lt; 300ms</b></span>
+          <span class="pill">Uptime <b>99.9%</b></span>
+          <span class="pill">PII Safe</span>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
